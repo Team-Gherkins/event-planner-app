@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <title>Event Planner</title>
+  <!--semantic ui-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <!--fomantic ui-->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.js"></script>
+  <!--Moment Timezone-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data-2012-2022.min.js"></script>
+  <!--Javascript-->
+  <script src="sampleDownload.js"></script>
+</head>
+
+
+<body>
+
+<div class="ui teal inverted segment"><h1 class="ui left aligned header">Event Planner</h1></div>
+<div class="ui container">
+  <div class="ui raised segment" action="">
+    <form class="ui form">
+      <div class="field">
+        <div class="ui grid">
+          <div class="twelve wide column">
+            <div class="ui transparent massive input">
+              <input type="text" id="event-title" placeholder="Event Title" style="text-align: center; font-size: 32px;">
+            </div>
+          </div>
+          <div class="two wide column">
+            <label>Visibility</label>
+            <select class="ui dropdown" id="event-visibility">
+              <option value="PUBLIC">Public</option><option value="PRIVATE">Private</option><option value="CONFIDENTIAL">Confidential</option>
+            </select>
+          </div>
+          <div class="two wide column">
+            <label>Priority</label>
+            <select class="ui dropdown" id="event-priority">
+              <option value="9">Low</option><option value="5">Medium</option><option value="1">High</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="ui section divider"></div>
+      <div class="field">
+        <div class="ui grid">
+          <div class="four wide column">
+            <label>Start</label>
+            <div class="ui calendar" id="event-start" >
+              <div class="ui input left icon">
+                <i class="calendar icon"></i>
+                <input type="text" placeholder="Date/Time">
+              </div>
+            </div>
+          </div>
+          <div class="four wide column">
+            <label>End</label>
+            <div class="ui calendar" id="event-end" >
+              <div class="ui input left icon">
+                <i class="calendar icon"></i>
+                <input type="text" placeholder="Date/Time">
+              </div>
+            </div>
+          </div>
+          <div class="four wide column"><label>Timezone</label><select class="ui dropdown" id="timezone-dropdown"> </select></div>
+        </div>
+      </div>
+      <div class="ui section divider"></div>
+      <div class="field"><label>Venue</label><input type="text" id="event-venue" placeholder="Auditorium"></div>
+      <div class="field">
+        <label>Address</label>
+        <div class="ui accordion">
+          <div class="title">
+            <div class="ui grid">
+              <div class="fifteen wide column">
+                <input type="text" name="last-name" id="event-address" placeholder="Click button on right" disabled>
+              </div>
+              <div
+                class="one wide column"><div
+                class="ui icon large circular button"><i class="angle double down icon"></i></div></div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="ui form">
+              <div class="field"><label>Street Number and Name</label><input type="text" placeholder="1234 Abcd Avenue"></div>
+              <div class="field"><label>Apt/Suite/Unit</label><input type="text" placeholder="1601"></div>
+              <div class="field"><label>City</label><input type="text" placeholder="Honolulu"></div>
+              <div class="field"><label>State/Province/Region</label><input type="text" placeholder="Hawaii"></div>
+              <div class="field"><label>Postal/Zip Code</label><input type="text" placeholder="12345"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ui section divider"></div>
+      <div class="field"><label>Description:</label><textarea id="event-description"></textarea>
+      </div>
+      <button class="large ui teal button" type="submit" onclick="downloadFile('sample.txt')"><i class="download icon"></i>
+        Generate
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  $('.ui.accordion').accordion({ selector: { trigger: '.title .ui.button' } });
+  $('.ui.calendar').calendar();
+
+  var timezoneArray = moment.tz.names();
+  var dropdownItems = "";
+  for (var i = 0; i < timezoneArray.length; i++) {
+    if (timezoneArray[i] == "HST") {
+      dropdownItems += "<option value='" + timezoneArray[i] + "' selected>" + timezoneArray[i] + "</option>";
+    } else {
+      dropdownItems += "<option value='" + timezoneArray[i] + "'>" + timezoneArray[i] + "</option>";
+    }
+  }
+  document.getElementById("timezone-dropdown").innerHTML = dropdownItems;
+</script>
+
+</body>
+
+
+</html>
