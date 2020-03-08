@@ -16,7 +16,9 @@ function downloadFile(filename) {
     // calendar -- https://fomantic-ui.com/modules/calendar.html#/definition
                 + "DTSTART:" + eventStart[1] + "\n" // incorrect format
                 + "DTEND:" + eventEnd[1] + "\n" // incorrect format
+                + "BEGIN:VTIMEZONE\n"
                 + "TZID:" + eventTimezone + "\n"
+                + "END:VTIMEZONE\n"
                 // + document.getElementById('event-venue').value + "\n"
                 + "LOCATION:" + document.getElementById('event-address').value + "\n"
                 + "DESCRIPTION:" + document.getElementById('event-description').value + "\n"
