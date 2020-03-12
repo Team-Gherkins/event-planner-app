@@ -1,0 +1,27 @@
+{
+  "name": "event-planner-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "javascript/chai.js",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "moment-timezone": "^0.5.28"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Team-Gherkins/event-planner-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Team-Gherkins/event-planner-app/issues"
+  },
+  "homepage": "https://github.com/Team-Gherkins/event-planner-app#readme"
+}
