@@ -21,6 +21,7 @@
   <script src="sampleDownload.js"></script>
   <!--for unit testing (assertion library)-->
   <script src="chai.js" type="text/javascript"></script>
+  <script src="fileGenerator.js"></script>
 </head>
 
 
@@ -30,7 +31,7 @@
 <div class="ui container">
   <div class="ui raised very padded segment">
     <form class="ui form">
-<div class="field">
+      <div class="field">
         <div class="ui grid">
           <div class="twelve wide column">
             <div class="ui transparent massive input">
@@ -53,9 +54,9 @@
             </select>
           </div>
         </div>
-</div>
-<div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-<div class="field">
+      </div>
+      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
+      <div class="field">
         <div class="ui grid">
           <div class="four wide column">
             <label>Start</label>
@@ -75,12 +76,12 @@
           </div>
           <div class="three wide column"><label>Timezone</label><select class="ui dropdown" id="timezone-dropdown"></select></div>
         </div>
-</div>
-<div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-<div class="field">
+      </div>
+      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
+      <div class="field">
         <label>Venue</label><input type="text" id="event-venue" placeholder="Auditorium">
-</div>
-<div class="field">
+      </div>
+      <div class="field">
         <label>Address</label>
         <div class="ui accordion">
           <div class="title">
@@ -124,13 +125,13 @@
             </div>
           </div>
         </div>
-</div>
-<div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-<div class="field">
+      </div>
+      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
+      <div class="field">
         <label>Description:</label>
         <textarea id="event-description"></textarea>
-</div>
-      <button class="large ui teal button" onclick="downloadFile('sample.txt')"><i class="download icon"></i>
+      </div>
+      <button class="large ui teal button" onclick="checkInput()" type="button"><i class="download icon"></i>
         Generate
       </button>
     </form>
@@ -140,6 +141,21 @@
 <script>
   $('.ui.accordion').accordion({ selector: { trigger: '.title .ui.button' } });
   $('.ui.calendar').calendar();
+
+  var sdate = null;
+  var edate = null;
+
+  $('#event-start').calendar({
+    onChange: function (date, text) {
+      sdate = text;
+    },
+  });
+
+  $('#event-end').calendar({
+    onChange: function (date, text) {
+      edate = text;
+    },
+  });
 
   var timezoneArray = moment.tz.names();
   var timezoneItems = "";
@@ -154,72 +170,128 @@
 
   function addressDisplay() {
     var state =
-      document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
+        document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
     var addressString = document.getElementById("address-street").value + ", "
-      + document.getElementById("address-apt").value + ", "
-      + document.getElementById("address-city").value + ", "
-      + state + ", "
-      + document.getElementById("address-zip").value;
+        + document.getElementById("address-apt").value + ", "
+        + document.getElementById("address-city").value + ", "
+        + state + ", "
+        + document.getElementById("address-zip").value;
     document.getElementById("event-address").value = addressString;
     $('.ui.accordion').accordion('close', 0);
   }
 
+
+
+  function checkInput() {
+
+    var valid = true;
+    var title = document.getElementById("event-title").value;
+    var venue = document.getElementById("event-venue").value;
+    var address = document.getElementById("event-address").value;
+    var description = document.getElementById("event-description").value;
+
+    // code to make start date into a string for .ics file
+    var startDate = new Date(sdate).toISOString();
+    var finalSDate = startDate.substr(0,4) + startDate.substr(5,2) + startDate.substr(8,2) + 'T'  + startDate.substr(11,2)
+        + startDate.substr(14,2) + startDate.substr(17,2);
+    var compareStart = new Date(sdate).getTime();
+
+    // code to make start date into a string for .ics file
+    var endDate = new Date(edate).toISOString();
+    var finalEDate = endDate.substr(0,4) + endDate.substr(5,2) + endDate.substr(8,2) + 'T'  + endDate.substr(11,2)
+        + endDate.substr(14,2) + endDate.substr(17,2);
+    var compareEnd = new Date(edate).getTime();
+
+
+    console.log('info for start date:')
+    console.log(sdate);
+    console.log(startDate);
+    console.log(finalSDate);
+
+    console.log('info for end date:')
+    console.log(edate);
+    console.log(endDate);
+    console.log(finalEDate);
+
+    //check parameters.
+    if(sdate === null | edate === null) {
+      valid = false;
+      alert('There must be a start and end to the event');
+    } else if(compareStart > compareEnd){
+      valid = false;
+      alert('start time must be before end time');
+    } else if(title === ''){
+      valid = false;
+      alert('There must be a title');
+    } else if(venue === ''){
+      valid = false;
+      alert('There must be a venue');
+    } else if(address === ''){
+      valid = false;
+      alert('There must be a address \n*pleae make sure to confirm address*');
+    } else if(description === ''){
+      valid = false;
+      alert('There must be a description');
+    } else if (valid === true) {
+      generateFile('calendar.ics', title, finalSDate, finalEDate, address, description);
+    }
+  }
+
   var stateItems =
-    "<option value=\"AL\">Alabama</option>" +
-    "<option value=\"AK\">Alaska</option>" +
-    "<option value=\"AZ\">Arizona</option>" +
-    "<option value=\"AR\">Arkansas</option>" +
-    "<option value=\"CA\">California</option>" +
-    "<option value=\"CO\">Colorado</option>" +
-    "<option value=\"CT\">Connecticut</option>" +
-    "<option value=\"DE\">Delaware</option>" +
-    "<option value=\"DC\">District Of Columbia</option>" +
-    "<option value=\"FL\">Florida</option>" +
-    "<option value=\"GA\">Georgia</option>" +
-    "<option value=\"HI\" selected>Hawaii</option>" +
-    "<option value=\"ID\">Idaho</option>" +
-    "<option value=\"IL\">Illinois</option>" +
-    "<option value=\"IN\">Indiana</option>" +
-    "<option value=\"IA\">Iowa</option>" +
-    "<option value=\"KS\">Kansas</option>" +
-    "<option value=\"KY\">Kentucky</option>" +
-    "<option value=\"LA\">Louisiana</option>" +
-    "<option value=\"ME\">Maine</option>" +
-    "<option value=\"MD\">Maryland</option>" +
-    "<option value=\"MA\">Massachusetts</option>" +
-    "<option value=\"MI\">Michigan</option>" +
-    "<option value=\"MN\">Minnesota</option>" +
-    "<option value=\"MS\">Mississippi</option>" +
-    "<option value=\"MO\">Missouri</option>" +
-    "<option value=\"MT\">Montana</option>" +
-    "<option value=\"NE\">Nebraska</option>" +
-    "<option value=\"NV\">Nevada</option>" +
-    "<option value=\"NH\">New Hampshire</option>" +
-    "<option value=\"NJ\">New Jersey</option>" +
-    "<option value=\"NM\">New Mexico</option>" +
-    "<option value=\"NY\">New York</option>" +
-    "<option value=\"NC\">North Carolina</option>" +
-    "<option value=\"ND\">North Dakota</option>" +
-    "<option value=\"OH\">Ohio</option>" +
-    "<option value=\"OK\">Oklahoma</option>" +
-    "<option value=\"OR\">Oregon</option>" +
-    "<option value=\"PA\">Pennsylvania</option>" +
-    "<option value=\"RI\">Rhode Island</option>" +
-    "<option value=\"SC\">South Carolina</option>" +
-    "<option value=\"SD\">South Dakota</option>" +
-    "<option value=\"TN\">Tennessee</option>" +
-    "<option value=\"TX\">Texas</option>" +
-    "<option value=\"UT\">Utah</option>" +
-    "<option value=\"VT\">Vermont</option>" +
-    "<option value=\"VA\">Virginia</option>" +
-    "<option value=\"WA\">Washington</option>" +
-    "<option value=\"WV\">West Virginia</option>" +
-    "<option value=\"WI\">Wisconsin</option>" +
-    "<option value=\"WY\">Wyoming</option>";
+      "<option value=\"AL\">Alabama</option>" +
+      "<option value=\"AK\">Alaska</option>" +
+      "<option value=\"AZ\">Arizona</option>" +
+      "<option value=\"AR\">Arkansas</option>" +
+      "<option value=\"CA\">California</option>" +
+      "<option value=\"CO\">Colorado</option>" +
+      "<option value=\"CT\">Connecticut</option>" +
+      "<option value=\"DE\">Delaware</option>" +
+      "<option value=\"DC\">District Of Columbia</option>" +
+      "<option value=\"FL\">Florida</option>" +
+      "<option value=\"GA\">Georgia</option>" +
+      "<option value=\"HI\" selected>Hawaii</option>" +
+      "<option value=\"ID\">Idaho</option>" +
+      "<option value=\"IL\">Illinois</option>" +
+      "<option value=\"IN\">Indiana</option>" +
+      "<option value=\"IA\">Iowa</option>" +
+      "<option value=\"KS\">Kansas</option>" +
+      "<option value=\"KY\">Kentucky</option>" +
+      "<option value=\"LA\">Louisiana</option>" +
+      "<option value=\"ME\">Maine</option>" +
+      "<option value=\"MD\">Maryland</option>" +
+      "<option value=\"MA\">Massachusetts</option>" +
+      "<option value=\"MI\">Michigan</option>" +
+      "<option value=\"MN\">Minnesota</option>" +
+      "<option value=\"MS\">Mississippi</option>" +
+      "<option value=\"MO\">Missouri</option>" +
+      "<option value=\"MT\">Montana</option>" +
+      "<option value=\"NE\">Nebraska</option>" +
+      "<option value=\"NV\">Nevada</option>" +
+      "<option value=\"NH\">New Hampshire</option>" +
+      "<option value=\"NJ\">New Jersey</option>" +
+      "<option value=\"NM\">New Mexico</option>" +
+      "<option value=\"NY\">New York</option>" +
+      "<option value=\"NC\">North Carolina</option>" +
+      "<option value=\"ND\">North Dakota</option>" +
+      "<option value=\"OH\">Ohio</option>" +
+      "<option value=\"OK\">Oklahoma</option>" +
+      "<option value=\"OR\">Oregon</option>" +
+      "<option value=\"PA\">Pennsylvania</option>" +
+      "<option value=\"RI\">Rhode Island</option>" +
+      "<option value=\"SC\">South Carolina</option>" +
+      "<option value=\"SD\">South Dakota</option>" +
+      "<option value=\"TN\">Tennessee</option>" +
+      "<option value=\"TX\">Texas</option>" +
+      "<option value=\"UT\">Utah</option>" +
+      "<option value=\"VT\">Vermont</option>" +
+      "<option value=\"VA\">Virginia</option>" +
+      "<option value=\"WA\">Washington</option>" +
+      "<option value=\"WV\">West Virginia</option>" +
+      "<option value=\"WI\">Wisconsin</option>" +
+      "<option value=\"WY\">Wyoming</option>";
   document.getElementById("address-state").innerHTML = stateItems;
 </script>
 
 </body>
-
 
 </html>
