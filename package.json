@@ -5,6 +5,8 @@
   "main": "javascript/chai.js",
   "dependencies": {
     "chai": "^4.2.0",
+    "jquery": "^3.4.1",
+    "jsdom": "^16.2.1",
     "moment-timezone": "^0.5.28"
   },
   "devDependencies": {
