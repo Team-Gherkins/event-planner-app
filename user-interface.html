@@ -202,7 +202,20 @@
   document.getElementById("timezone-dropdown").innerHTML = timezoneItems;
 
   function getRecurrenceRule() {
-    var rrule = document.getElementByI
+    var rrule = document.getElementById("rrule-freq").value;
+    var iterations = document.getElementByID("rrule-iterations").value;
+    var returnString;
+
+    if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
+      if (iterations > 0) {
+        returnString = "RRULE:" + rrule + "; INTERVAL="+iterations;
+      }
+      else {
+        returnString = "RRULE:" + rrule;
+      }
+    }
+    else { returnString = "" }
+    return returnString;
   }
 
   function addressDisplay() {
