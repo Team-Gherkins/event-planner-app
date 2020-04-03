@@ -76,6 +76,8 @@
             </div>
           </div>
           <div class="three wide column"><label>Timezone</label><select class="ui dropdown" id="timezone-dropdown"></select></div>
+        </div>
+        <div class="field">
           <div class="ui accordion">
             <div class="title">
               <div class="four wide column">
@@ -86,14 +88,24 @@
               </div>
             </div>
             <div class="content">
-                <label>Frequency</label><select class="ui dropdown" id="rrule-freq">
-                <option style="display: none;"></option>
-                <option value="DAILY">Daily</option>
-                <option value="WEEKLY">Weekly</option>
-                <option value="MONTHLY">Monthly</option>
-                <option value="YEARLY">Yearly</option>
-              </select>
-                <label>Iterations</label><input type="number" placeholder="Enter # of times" id="rrule-iterations">
+              <div class="ui grid">
+                <div class="three wide column">
+                  <label>Frequency</label><select class="ui dropdown" id="rrule-freq">
+                  <option style="display: none;"></option>
+                  <option value="">None</option>
+                  <option value="DAILY">Daily</option>
+                  <option value="WEEKLY">Weekly</option>
+                  <option value="MONTHLY">Monthly</option>
+                  <option value="YEARLY">Yearly</option>
+                </select>
+                </div>
+                <div class="two wide column">
+                  <label>Iterations</label><input type="number" placeholder="Enter # of times" id="rrule-iterations">
+                </div>
+                <div class="five wide column">
+                  <label>Exceptions</label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -190,7 +202,7 @@
   document.getElementById("timezone-dropdown").innerHTML = timezoneItems;
 
   function getRecurrenceRule() {
-
+    var rrule = document.getElementByI
   }
 
   function addressDisplay() {
