@@ -17,6 +17,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data-2012-2022.min.js"></script>
+  <!--Mapquest Developer-->
+  <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
+
   <!--Javascript-->
   <script src="fileGenerator.js"></script>
 </head>
@@ -186,6 +190,10 @@
     var venue = document.getElementById("event-venue").value;
     var address = document.getElementById("event-address").value;
     var description = document.getElementById("event-description").value;
+    var street = document.getElementById("address-street").value;
+    var state = document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
+    var city = document.getElementById("address-city").value;
+    var zip = document.getElementById("address-zip").value;
 
     // code to make start date into a string for .ics file
     var startDate = new Date(sdate).toISOString();
@@ -198,40 +206,68 @@
     var finalEDate = endDate.substr(0,4) + endDate.substr(5,2) + endDate.substr(8,2) + 'T'  + endDate.substr(11,2)
         + endDate.substr(14,2) + endDate.substr(17,2);
     var compareEnd = new Date(edate).getTime();
+    var compareNow = new Date().getTime();
 
+    // console.log('info for start date:')
+    // console.log(sdate);
+    // console.log(startDate);
+    // console.log(finalSDate);
+    //
+    // console.log('info for end date:')
+    // console.log(edate);
+    // console.log(endDate);
+    // console.log(finalEDate);
 
-    console.log('info for start date:')
-    console.log(sdate);
-    console.log(startDate);
-    console.log(finalSDate);
+    var lat = null;
+    var lng = null;
 
-    console.log('info for end date:')
-    console.log(edate);
-    console.log(endDate);
-    console.log(finalEDate);
+    L.mapquest.key = 'OjiA3XDVG7onzudvU6ZVAcIKzAx1cPng';
+    L.mapquest.geocoding().geocode({
+      street: street,
+      city: city,
+      state: state,
+      postalCode: zip
+    }, getAddress);
+    function getAddress(error, response) {
+      var location = response.results[0].locations[0];
+      var latLng = location.displayLatLng;
+      this.lat = latLng.lat;
+      this.lng = latLng.lng;
+      console.log(latLng);
 
-    //check parameters.
-    if(sdate === null | edate === null) {
-      valid = false;
-      alert('There must be a start and end to the event');
-    } else if(compareStart > compareEnd){
-      valid = false;
-      alert('start time must be before end time');
-    } else if(title === ''){
-      valid = false;
-      alert('There must be a title');
-    } else if(venue === ''){
-      valid = false;
-      alert('There must be a venue');
-    } else if(address === ''){
-      valid = false;
-      alert('There must be a address \n*pleae make sure to confirm address*');
-    } else if(description === ''){
-      valid = false;
-      alert('There must be a description');
-    } else if (valid === true) {
-      generateFile('calendar.ics', title, finalSDate, finalEDate, address, description);
+      //check parameters.
+      if(sdate === null | edate === null) {
+        valid = false;
+        alert('There must be a start and end to the event');
+      } else if(compareStart > compareEnd){
+        valid = false;
+        alert('Start time must be before end time');
+      } else if(compareStart < compareNow){
+        valid = false;
+        alert('Event cannot start in the past');
+      } else if(title === ''){
+        valid = false;
+        alert('There must be a title');
+      } else if(venue === ''){
+        valid = false;
+        alert('There must be a venue');
+      } else if(address === ''){
+        valid = false;
+        alert('There must be a address \n*pleae make sure to confirm address*');
+      } else if(state === '' | city === '' | zip === '' | street === ''){
+        valid = false;
+        alert('Please make sure that all fields of the address are completed');
+      } else if(this.lat === null | this.lng === null){
+        valid = false;
+        alert('Invalid address was input. Please make sure that input is correct.');
+      } else if(description === ''){
+        valid = false;
+        alert('There must be a description');
+      } else if (valid === true) {
+        generateFile('calendar.ics', title, finalSDate, finalEDate, address, description, this.lat, this.lng);
+      }
     }
+
   }
 
   var stateItems =
