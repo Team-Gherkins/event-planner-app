@@ -1,4 +1,4 @@
-function generateFile(filename, summary, dtstart, dtend, location, description){
+function generateFile(filename, summary, dtstart, dtend, location, description, lat, lng){
   var text = 'BEGIN:VCALENDAR\n' +
       'VERSION:2.0\n' +
       'PRODID:-//ZContent.net//Zap Calendar 1.0//EN\n' +
@@ -15,7 +15,7 @@ function generateFile(filename, summary, dtstart, dtend, location, description){
       'DTSTAMP:20200228T141403\n' +
       'CATEGORIES:SCHOOL, STUDY\n' +
       'LOCATION:' + location + '\n' +
-      'GEO:21.300846;-157.816225\n' +
+      'GEO:' + lat + ';' + lng + '\n' +
       'DESCRIPTION:' + description + '\n' +
       'END:VEVENT\n' +
       'END:VCALENDAR\n';
