@@ -76,6 +76,26 @@
             </div>
           </div>
           <div class="three wide column"><label>Timezone</label><select class="ui dropdown" id="timezone-dropdown"></select></div>
+          <div class="ui accordion">
+            <div class="title">
+              <div class="four wide column">
+                Recurring?
+              </div>
+              <div class="one wide column">
+                <div class="ui icon large circular button"><i class="angle double down icon"></i></div>
+              </div>
+            </div>
+            <div class="content">
+                <label>Frequency</label><select class="ui dropdown" id="rrule-freq">
+                <option style="display: none;"></option>
+                <option value="DAILY">Daily</option>
+                <option value="WEEKLY">Weekly</option>
+                <option value="MONTHLY">Monthly</option>
+                <option value="YEARLY">Yearly</option>
+              </select>
+                <label>Iterations</label><input type="number" placeholder="Enter # of times" id="rrule-iterations">
+            </div>
+          </div>
         </div>
       </div>
       <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
@@ -169,6 +189,10 @@
   }
   document.getElementById("timezone-dropdown").innerHTML = timezoneItems;
 
+  function getRecurrenceRule() {
+
+  }
+
   function addressDisplay() {
     var state =
         document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
@@ -180,8 +204,6 @@
     document.getElementById("event-address").value = addressString;
     $('.ui.accordion').accordion('close', 0);
   }
-
-
 
   function checkInput() {
 
@@ -234,7 +256,6 @@
       this.lat = latLng.lat;
       this.lng = latLng.lng;
       console.log(latLng);
-
       //check parameters.
       if(sdate === null | edate === null) {
         valid = false;
