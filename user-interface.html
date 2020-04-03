@@ -203,15 +203,15 @@
 
   function getRecurrenceRule() {
     var rrule = document.getElementById("rrule-freq").value;
-    var iterations = document.getElementByID("rrule-iterations").value;
+    var iterations = document.getElementById("rrule-iterations").value;
     var returnString;
 
     if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
       if (iterations > 0) {
-        returnString = "RRULE:" + rrule + "; INTERVAL="+iterations;
+        returnString = "RRULE:FREQ=" + rrule + ";COUNT="+iterations + ";\n";
       }
       else {
-        returnString = "RRULE:" + rrule;
+        returnString = "RRULE:" + rrule + "\n";
       }
     }
     else { returnString = "" }
@@ -241,6 +241,7 @@
     var state = document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
     var city = document.getElementById("address-city").value;
     var zip = document.getElementById("address-zip").value;
+    var rrule = getRecurrenceRule();
 
     // code to make start date into a string for .ics file
     var startDate = new Date(sdate).toISOString();
@@ -310,7 +311,7 @@
         valid = false;
         alert('There must be a description');
       } else if (valid === true) {
-        generateFile('calendar.ics', title, finalSDate, finalEDate, address, description, this.lat, this.lng);
+        generateFile('calendar.ics', title, finalSDate, finalEDate, address, description, this.lat, this.lng, rrule);
       }
     }
 

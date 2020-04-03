@@ -1,4 +1,4 @@
-function generateFile(filename, summary, dtstart, dtend, location, description, lat, lng){
+function generateFile(filename, summary, dtstart, dtend, location, description, lat, lng, rrule){
   var text = 'BEGIN:VCALENDAR\n' +
       'VERSION:2.0\n' +
       'PRODID:-//ZContent.net//Zap Calendar 1.0//EN\n' +
@@ -17,6 +17,7 @@ function generateFile(filename, summary, dtstart, dtend, location, description, 
       'LOCATION:' + location + '\n' +
       'GEO:' + lat + ';' + lng + '\n' +
       'DESCRIPTION:' + description + '\n' +
+      rrule +
       'END:VEVENT\n' +
       'END:VCALENDAR\n';
   var element = document.createElement('a');
