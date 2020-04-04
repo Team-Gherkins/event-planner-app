@@ -239,7 +239,7 @@
       if(sdate === null | edate === null) {
         valid = false;
         alert('There must be a start and end to the event');
-      } else if(compareStart > compareEnd){
+      } else if(compareStart >= compareEnd){
         valid = false;
         alert('Start time must be before end time');
       } else if(compareStart < compareNow){
