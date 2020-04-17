@@ -242,6 +242,7 @@
     var city = document.getElementById("address-city").value;
     var zip = document.getElementById("address-zip").value;
     var rrule = getRecurrenceRule();
+    var iterations = document.getElementById("rrule-iterations").value;
 
     // code to make start date into a string for .ics file
     var startDate = new Date(sdate).toISOString();
@@ -310,6 +311,9 @@
       } else if(description === ''){
         valid = false;
         alert('There must be a description');
+       }else if(iterations < 0){
+        valid = false;
+        alert('Event cannot recur less than zero times.');
       } else if (valid === true) {
         generateFile('calendar.ics', title, finalSDate, finalEDate, address, description, this.lat, this.lng, rrule);
       }
