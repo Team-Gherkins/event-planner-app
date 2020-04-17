@@ -14,9 +14,8 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.js"></script>
   <!--Moment Timezone-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data-2012-2022.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.0/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.28/moment-timezone-with-data.min.js"></script>
   <!--Mapquest Developer-->
   <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
   <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
@@ -29,59 +28,95 @@
 <body>
 
 <div class="ui teal inverted segment"><h1 class="ui left aligned header">Event Planner</h1></div>
+<br/>
 <div class="ui container">
   <div class="ui raised very padded segment">
     <form class="ui form">
       <div class="field">
         <div class="ui grid">
-          <div class="twelve wide column">
+          <div class="ten wide column">
             <div class="ui transparent massive input">
-              <input type="text" id="event-title" placeholder="Event Title" style="text-align: center; font-size: 32px;">
+              <input type="text" id="event-title" placeholder="Event Title *" style="text-align: center; font-size:
+              32px; color: #00B5AD;">
             </div>
           </div>
-          <div class="two wide column">
-            <label>Visibility</label>
-            <select class="ui dropdown" id="event-visibility">
-              <option value="PUBLIC">Public</option><option value="PRIVATE">Private</option><option value="CONFIDENTIAL">Confidential</option>
-            </select>
+          <div class="three wide column">
+            <div class="field">
+              <label>Visibility</label>
+              <select class="ui dropdown" id="event-visibility">
+                <option value="PUBLIC">Public</option><option value="PRIVATE">Private</option><option value="CONFIDENTIAL">Confidential</option>
+              </select>
+            </div>
           </div>
-          <div class="two wide column">
-            <label>Priority</label>
-            <select class="ui dropdown" id="event-priority">
-              <option style="display: none;" disabled selected></option>
-              <option value="9">Low</option>
-              <option value="5">Medium</option>
-              <option value="1">High</option>
-            </select>
+          <div class="three wide column">
+            <div class="field">
+              <label>Priority<span style="color: red; font-size: 16px;"> *</span></label>
+              <select class="ui dropdown" id="event-priority">
+                <option style="display: none;" disabled selected></option>
+                <option value="9">Urgent, Critical</option>
+                <option value="7">Urgent,  Uncritical</option>
+                <option value="3">Critical, Non-urgent</option>
+                <option value="0">Uncritical, Non-urgent</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
-      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-      <div class="field">
-        <div class="ui grid">
-          <div class="four wide column">
-            <label>Start</label>
+      <hr style="margin: 50px 0 50px 0;" color="#00B5AD"/>
+      <div class="ui two column very relaxed middle aligned grid">
+        <div class="column">
+          <div class="field">
+            <div class="ui checkbox">
+              <input type="checkbox" id="rsvp-request" onchange="checkRSVP()">
+              <label><b>RSVP to:</b></label>
+            </div>
+            <div class="field">
+              <input type="text" placeholder="Email *" id="event-rsvp" disabled style="margin-top: 7px;">
+            </div>
+          </div>
+          <div class="field">
+            <label>Sent from:</label>
+            <input type="text" placeholder="Email" id="event-sentBy">
+          </div>
+        </div>
+        <div class="column">
+          <div class="field">
+            <label>Start<span style="color: red; font-size: 16px;"> *</span></label>
             <div class="ui calendar" id="event-start">
               <div class="ui input left icon">
-                <i class="calendar icon"></i><input type="text" placeholder="Date/Time">
+                <i class="calendar icon"></i><input type="text">
               </div>
             </div>
           </div>
-          <div class="four wide column">
-            <label>End</label>
+          <div class="field">
+            <label>End<span style="color: red; font-size: 16px;"> *</span></label>
             <div class="ui calendar" id="event-end" >
               <div class="ui input left icon">
-                <i class="calendar icon"></i><input type="text" placeholder="Date/Time">
+                <i class="calendar icon"></i><input type="text">
               </div>
             </div>
           </div>
-          <div class="three wide column"><label>Timezone</label><select class="ui dropdown" id="timezone-dropdown"></select></div>
+          <div class="field">
+            <label>Timezone</label>
+            <select class="ui dropdown" id="timezone-dropdown"></select>
+          </div>
         </div>
       </div>
-      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-      <div class="field">
-        <label>Venue</label><input type="text" id="event-venue" placeholder="Auditorium">
+      <hr style="margin: 50px 0 50px 0;" color="#00B5AD"/>
+      <div class="ui two column very relaxed grid">
+        <div class="ten wide column">
+          <div class="field">
+            <label>Venue<span style="color: red; font-size: 16px;"> *</span></label><input type="text" id="event-venue" placeholder="e.g., Auditorium">
+          </div>
+        </div>
+        <div class="six wide column">
+          <div class="field">
+            <label>Needed items:</label>
+            <input type="text" id="event-resources" placeholder="e.g., Chairs, camera, forks">
+          </div>
+        </div>
       </div>
+      <br/>
       <div class="field">
         <label>Address</label>
         <div class="ui accordion">
@@ -99,9 +134,10 @@
             <div class="ui padded basic segment">
               <div class="ui form">
                 <div class="field">
-                  <div class="ui grid">
+                  <div class="ui padded grid">
                     <div class="fourteen wide column">
-                      <label>Street Number and Name</label><input id="address-street" type="text" placeholder="1234 Abcd Avenue">
+                      <label>Street Number and Name<span style="color: red; font-size: 16px;"> *</span></label>
+                      <input id="address-street" type="text" placeholder="1234 Abcd Avenue">
                     </div>
                     <div class="two wide column">
                       <label>Apt/Suite/Unit</label><input type="text" placeholder="1601" id="address-apt">
@@ -109,71 +145,98 @@
                   </div>
                 </div>
                 <div class="ui field">
-                  <div class="ui grid">
+                  <div class="ui padded grid">
                     <div class="ten wide column">
-                      <label>City</label><input type="text" id="address-city" placeholder="Honolulu">
+                      <label>City<span style="color: red; font-size: 16px;"> *</span></label>
+                      <input type="text" id="address-city" placeholder="Honolulu">
                     </div>
                     <div class="four wide column">
-                      <label>State</label><select class="ui dropdown" id="address-state"> </select>
+                      <label>State<span style="color: red; font-size: 16px;"> *</span></label>
+                      <select class="ui dropdown" id="address-state"> </select>
                     </div>
                     <div class="two wide column">
-                      <label>Zip Code</label><input id="address-zip" type="text" placeholder="12345">
+                      <label>Zip Code<span style="color: red; font-size: 16px;"> *</span></label>
+                      <input id="address-zip" type="text" placeholder="12345">
                     </div>
                   </div>
                 </div>
-                <div class="small ui button" onclick="addressDisplay()">Confirm</div>
+                <div style="margin-left: 15px;" class="small ui button" onclick="addressDisplay()">Confirm</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="ui section divider" style="padding-top: 10px; padding-bottom: 10px"></div>
-      <div class="field">
-        <label>Description:</label>
-        <textarea id="event-description"></textarea>
-      </div>
-      <button class="large ui teal button" onclick="checkInput()" type="button"><i class="download icon"></i>
+      <hr style="margin: 50px 0 50px 0;" color="#00B5AD"/>
+        <div class="field">
+          <label>Summary:</label>
+          <textarea id="event-summary" rows="5"></textarea>
+        </div>
+      <hr style="margin: 50px 0 50px 0;" color="#00B5AD"/>
+      <button class="huge ui teal button" onclick="checkInput()" type="button"><i class="download icon"></i>
         Generate
       </button>
     </form>
   </div>
 </div>
+<br/><br/>
 
 <script>
   $('.ui.accordion').accordion({ selector: { trigger: '.title .ui.button' } });
   $('.ui.calendar').calendar();
 
+
+  var checkRSVP = function () {
+    if (document.getElementById("rsvp-request").checked) {
+      document.getElementById("event-rsvp").disabled = false;
+    } else {
+      document.getElementById("event-rsvp").disabled = true;
+    }
+    return document.getElementById("rsvp-request").checked;
+  }
+
+
   var sdate = null;
   var edate = null;
-
   $('#event-start').calendar({
     onChange: function (date, text) {
       sdate = text;
     },
   });
-
   $('#event-end').calendar({
     onChange: function (date, text) {
       edate = text;
     },
   });
 
-  var timezoneArray = moment.tz.names();
   var timezoneItems = "";
-  for (var i = 0; i < timezoneArray.length; i++) {
-    if (timezoneArray[i] == "HST") {
-      timezoneItems += "<option value='" + timezoneArray[i] + "' selected>" + timezoneArray[i] + "</option>";
+  var timezones = [];
+  for (var i = 0; i < moment.tz.countries().length; i++) {
+    var country = moment.tz.countries()[i];
+    for (var j = 0; j < moment.tz.zonesForCountry(country).length; j++) {
+      var timezone = moment.tz.zonesForCountry(country)[j];
+      timezones.push(timezone);
+    }
+  }
+  timezones = timezones.filter(function (element, index, self) { return index === self.indexOf(element) }).sort();
+  for (i = 0; i < timezones.length; i++) {
+    if (timezones[i] == "Pacific/Honolulu") {
+      timezoneItems += "<option value='" + moment.tz(timezones[i]).format('z') + "' selected>" + timezones[i] + "</option>";
     } else {
-      timezoneItems += "<option value='" + timezoneArray[i] + "'>" + timezoneArray[i] + "</option>";
+      timezoneItems += "<option value='" + moment.tz(timezones[i]).format('z') + "'>" + timezones[i] + "</option>";
     }
   }
   document.getElementById("timezone-dropdown").innerHTML = timezoneItems;
 
+console.log(moment().tz("America/New_York")._offset);
   function addressDisplay() {
     var state =
         document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
+    var apt = document.getElementById("address-apt").value;
+    if (apt !== '') {
+      apt += ", ";
+    }
     var addressString = document.getElementById("address-street").value + ", "
-        + document.getElementById("address-apt").value + ", "
+        + apt
         + document.getElementById("address-city").value + ", "
         + state + ", "
         + document.getElementById("address-zip").value;
@@ -182,18 +245,33 @@
   }
 
 
-
   function checkInput() {
+
+    var timezoneFields = { timezoneId: null, timezoneName: null, isDST: null, offset: null };
+    timezoneFields.timezoneId = document.getElementById('timezone-dropdown').options[document.getElementById('timezone-dropdown').selectedIndex].text;
+    timezoneFields.timezoneName = document.getElementById('timezone-dropdown')[document.getElementById('timezone-dropdown').selectedIndex].value;
+    timezoneFields.isDST = moment().tz(timezoneFields.timezoneId).isDST();
+    timezoneFields.offset = moment().tz(timezoneFields.timezoneId)._offset / 60;
 
     var valid = true;
     var title = document.getElementById("event-title").value;
+    var visibility = document.getElementById('event-visibility')[document.getElementById('event-visibility').selectedIndex].value;
+    var priority = document.getElementById('event-priority')[document.getElementById('event-priority').selectedIndex].value;
+    var resources = document.getElementById('event-resources').value;
+    var rsvp = document.getElementById('event-rsvp').value;
+    var sentBy = document.getElementById('event-sentBy').value;
     var venue = document.getElementById("event-venue").value;
     var address = document.getElementById("event-address").value;
-    var description = document.getElementById("event-description").value;
+    var summary = document.getElementById("event-summary").value;
     var street = document.getElementById("address-street").value;
     var state = document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
     var city = document.getElementById("address-city").value;
     var zip = document.getElementById("address-zip").value;
+
+
+/*    console.log(moment.tz("America/New_York").utcOffset() / 60);
+    console.log(moment([2021, 2, 14]).isDST());*/
+
 
     // code to make start date into a string for .ics file
     var startDate = new Date(sdate).toISOString();
@@ -236,35 +314,38 @@
       console.log(latLng);
 
       //check parameters.
-      if(sdate === null | edate === null) {
+      if (title === '') {
         valid = false;
-        alert('There must be a start and end to the event');
+        alert('There must be a title.');
+      } else if (priority === null) {
+        valid = false;
+        alert("There must be a selected priority option.");
+      } else if (checkRSVP() && rsvp === '') {
+        valid = false;
+        alert('There must be an RSVP-to email if the RSVP-to option is checked.')
+      } else if (sdate === null | edate === null) {
+        valid = false;
+        alert('There must be a start and end to the event.');
       } else if(compareStart > compareEnd){
         valid = false;
-        alert('Start time must be before end time');
+        alert('Start time must be before end time.');
       } else if(compareStart < compareNow){
         valid = false;
-        alert('Event cannot start in the past');
-      } else if(title === ''){
-        valid = false;
-        alert('There must be a title');
+        alert('Event cannot start in the past.');
       } else if(venue === ''){
         valid = false;
-        alert('There must be a venue');
+        alert('There must be a venue.');
       } else if(address === ''){
         valid = false;
-        alert('There must be a address \n*pleae make sure to confirm address*');
+        alert('There must be a address. \n*Please make sure to confirm address.*');
       } else if(state === '' | city === '' | zip === '' | street === ''){
         valid = false;
-        alert('Please make sure that all fields of the address are completed');
+        alert('Please make sure that all fields of the address are completed.');
       } else if(this.lat === null | this.lng === null){
         valid = false;
         alert('Invalid address was input. Please make sure that input is correct.');
-      } else if(description === ''){
-        valid = false;
-        alert('There must be a description');
       } else if (valid === true) {
-        generateFile('calendar.ics', title, finalSDate, finalEDate, address, description, this.lat, this.lng);
+        generateFile('calendar.ics', title, visibility, priority, timezoneFields, finalSDate, finalEDate, rsvp, sentBy, address, resources, summary, this.lat, this.lng);
       }
     }
 

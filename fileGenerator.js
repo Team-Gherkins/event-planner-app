@@ -1,24 +1,67 @@
-function generateFile(filename, summary, dtstart, dtend, location, description, lat, lng){
-  var text = 'BEGIN:VCALENDAR\n' +
-      'VERSION:2.0\n' +
-      'PRODID:-//ZContent.net//Zap Calendar 1.0//EN\n' +
-      'CALSCALE:GREGORIAN\n' +
-      'METHOD:PUBLISH\n' +
-      'BEGIN:VEVENT\n' +
-      'SUMMARY:' + summary + '\n' +
-      'UID:c7614cff-3549-4a00-9152-d25cc1fe077d\n' +
-      'SEQUENCE:0\n' +
-      'STATUS:CONFIRMED\n' +
-      'TRANSP:TRANSPARENT\n' +
-      'DTSTART:' + dtstart + '\n' +
-      'DTEND:' + dtend + '\n' +
-      'DTSTAMP:20200228T141403\n' +
-      'CATEGORIES:SCHOOL, STUDY\n' +
-      'LOCATION:' + location + '\n' +
-      'GEO:' + lat + ';' + lng + '\n' +
-      'DESCRIPTION:' + description + '\n' +
-      'END:VEVENT\n' +
-      'END:VCALENDAR\n';
+function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
+
+  var rsvpText = "";
+  var sentByText = "";
+  var resourcesText = "";
+  var summaryText = "";
+  var timezoneBeginText = "";
+  var timezoneEndText = "";
+  if (rsvp !== "") {
+    rsvpText = `ATTENDEE;RSVP=TRUE:mailto:${rsvp}`;
+  }
+  if (sentBy !== "") {
+    sentBy = `ORGANIZER;SENT-BY=\"mailto:${sentBy}\":mailto:${sentBy}`;
+  }
+  if (resources !== "") {
+    resourcesText = `RESOURCES:${resources}`;
+  }
+  if (summary !== "") {
+    summaryText = `SUMMARY:${summary}`
+  }
+  if (timezoneFields.isDST) {
+    timezoneBeginText = `BEGIN:DAYLIGHT`;
+    timezoneEndText = `END:DAYLIGHT`;
+  } else {
+    timezoneBeginText = `BEGIN:STANDARD`;
+    timezoneEndText = `END:STANDARD`;
+  }
+
+  var text =
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ZContent.net//Zap Calendar 1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:${timezoneFields.timezoneId}
+${timezoneBeginText}  
+TZOFFSETFROM:${timezoneFields.offset + "00"}
+TZOFFSETTO: 
+TZNAME:${timezoneFields.timezoneName}
+DSTART: 
+${timezoneEndText}
+END:VTIMEZONE
+BEGIN:VEVENT
+CLASS:${classification}
+PRIORITY:${priority}
+DESCRIPTION:${description}
+UID:c7614cff-3549-4a00-9152-d25cc1fe077d
+SEQUENCE:0
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+DTSTART:${dtstart}
+DTEND:${dtend}
+DTSTAMP:20200228T141403
+${sentByText}
+${rsvpText}
+CATEGORIES:SCHOOL, STUDY
+${resourcesText}
+LOCATION:${location}
+GEO:${lat};${lng}
+${summaryText}
+END:VEVENT
+END:VCALENDAR`;
+
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
   element.setAttribute('download', filename);
