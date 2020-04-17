@@ -181,6 +181,25 @@
     $('.ui.accordion').accordion('close', 0);
   }
 
+  function checkForNum(input){
+    var i;
+    for(i = 0; i < input.length; i++){
+      if(!(isNaN(input.charAt(i)))){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function checkForLetters(input){
+    var i;
+    for(i = 0; i < input.length; i++){
+      if(isNaN(input.charAt(i))){
+        return false;
+      }
+    }
+    return true;
+  }
 
 
   function checkInput() {
@@ -257,6 +276,12 @@
       } else if(state === '' | city === '' | zip === '' | street === ''){
         valid = false;
         alert('Please make sure that all fields of the address are completed');
+      } else if(!(checkForNum(city))){
+        valid = false;
+        alert('City cannot include numbers');
+      } else if(!(checkForLetters(zip))){
+        valid = false;
+        alert('Zip cannot include letters');
       } else if(this.lat === null | this.lng === null){
         valid = false;
         alert('Invalid address was input. Please make sure that input is correct.');
