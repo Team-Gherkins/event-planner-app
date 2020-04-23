@@ -194,9 +194,9 @@
     return document.getElementById("rsvp-request").checked;
   }
 
-
   var sdate = null;
   var edate = null;
+
   $('#event-start').calendar({
     onChange: function (date, text) {
       sdate = text;
@@ -244,6 +244,26 @@
     $('.ui.accordion').accordion('close', 0);
   }
 
+
+  function checkForNum(input){
+    var i;
+    for(i = 0; i < input.length; i++){
+      if(!(isNaN(input.charAt(i)))){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function checkForLetters(input){
+    var i;
+    for(i = 0; i < input.length; i++){
+      if(isNaN(input.charAt(i))){
+        return false;
+      }
+    }
+    return true;
+  }
 
   function checkInput() {
 
@@ -326,7 +346,7 @@
       } else if (sdate === null | edate === null) {
         valid = false;
         alert('There must be a start and end to the event.');
-      } else if(compareStart > compareEnd){
+      } else if(compareStart >= compareEnd){
         valid = false;
         alert('Start time must be before end time.');
       } else if(compareStart < compareNow){
@@ -338,6 +358,12 @@
       } else if(address === ''){
         valid = false;
         alert('There must be a address. \n*Please make sure to confirm address.*');
+      } else if(!(checkForNum(city))){
+        valid = false;
+        alert('City cannot include numbers');
+      } else if(!(checkForLetters(zip))){
+        valid = false;
+        alert('Zip cannot include letters');
       } else if(state === '' | city === '' | zip === '' | street === ''){
         valid = false;
         alert('Please make sure that all fields of the address are completed.');
