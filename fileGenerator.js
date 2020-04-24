@@ -36,9 +36,6 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VTIMEZONE
 TZID:${timezoneFields.timezoneId}
-${timezoneBeginText}  
-TZNAME:${timezoneFields.timezoneName}
-${timezoneEndText}
 END:VTIMEZONE
 BEGIN:VEVENT
 CLASS:${classification}
@@ -50,14 +47,15 @@ STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 DTSTART:${dtstart}
 DTEND:${dtend}
-DTSTAMP:20200228T141403
-${sentByText}
-${rsvpText}
-CATEGORIES:SCHOOL, STUDY
-${resourcesText}
+DTSTAMP:20200228T141403`
+  text += sentByText;
+        + rsvpText
+        + resourcesText
+        + summaryText;
+  text +=
+`CATEGORIES:SCHOOL, STUDY
 LOCATION:${location}
 GEO:${lat};${lng}
-${summaryText}
 END:VEVENT
 END:VCALENDAR`;
 
