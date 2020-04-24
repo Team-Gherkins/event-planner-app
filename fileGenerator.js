@@ -1,5 +1,7 @@
 function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
 
+  console.log(timezoneFields);
+
   var rsvpText = "";
   var sentByText = "";
   var resourcesText = "";
@@ -35,10 +37,7 @@ METHOD:PUBLISH
 BEGIN:VTIMEZONE
 TZID:${timezoneFields.timezoneId}
 ${timezoneBeginText}  
-TZOFFSETFROM:${timezoneFields.offset + "00"}
-TZOFFSETTO: 
 TZNAME:${timezoneFields.timezoneName}
-DSTART: 
 ${timezoneEndText}
 END:VTIMEZONE
 BEGIN:VEVENT

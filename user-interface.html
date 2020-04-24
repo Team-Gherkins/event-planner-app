@@ -208,6 +208,7 @@
     },
   });
 
+
   var timezoneItems = "";
   var timezones = [];
   for (var i = 0; i < moment.tz.countries().length; i++) {
@@ -227,7 +228,7 @@
   }
   document.getElementById("timezone-dropdown").innerHTML = timezoneItems;
 
-console.log(moment().tz("America/New_York")._offset);
+
   function addressDisplay() {
     var state =
         document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
@@ -252,6 +253,11 @@ console.log(moment().tz("America/New_York")._offset);
     timezoneFields.timezoneName = document.getElementById('timezone-dropdown')[document.getElementById('timezone-dropdown').selectedIndex].value;
     timezoneFields.isDST = moment().tz(timezoneFields.timezoneId).isDST();
     timezoneFields.offset = moment().tz(timezoneFields.timezoneId)._offset / 60;
+    if (timezoneFields.offset > 0) {
+      timezoneFields.offset = "+" + timezoneFields.offset + "00";
+    } else {
+      timezoneFields.offset += "00";
+    }
 
     var valid = true;
     var title = document.getElementById("event-title").value;
@@ -269,8 +275,6 @@ console.log(moment().tz("America/New_York")._offset);
     var zip = document.getElementById("address-zip").value;
 
 
-/*    console.log(moment.tz("America/New_York").utcOffset() / 60);
-    console.log(moment([2021, 2, 14]).isDST());*/
 
 
     // code to make start date into a string for .ics file
