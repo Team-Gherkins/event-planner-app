@@ -1,3 +1,4 @@
+
 function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
 
   console.log(timezoneFields);

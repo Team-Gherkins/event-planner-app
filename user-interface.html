@@ -102,6 +102,65 @@
           </div>
         </div>
       </div>
+      <div class="ui one column">
+          <div class="column">
+            <div class="field">
+              <div class="ui accordion">
+                <div class="title">
+                  <div class="four wide column">
+                    <b>Recurring?</b>
+                  </div>
+                  <div class="one wide column">
+                    <div class="ui icon large circular button"><i class="angle double down icon"></i></div>
+                  </div>
+                </div>
+                <div class="content">
+                  <div class="ui grid">
+                    <div class="three wide column">
+                      <label><b>Frequency</b></label><select class="ui dropdown" id="rrule">
+                      <option style="display: none;"></option>
+                      <option value="default">None</option>
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="YEARLY">Yearly</option>
+                    </select>
+                    </div>
+                    <div class="four wide column">
+                      <label><b>Until</b></label>
+                      <div class="ui calendar" id="rrule-end-calendar">
+                        <div class="ui input left icon">
+                          <i class="calendar icon"></i>
+                          <input type="text" id="rrule-end">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="four wide column">
+                      <label><b>Exceptions</b></label>
+                      <div class="ui calendar" id="rrule-exceptions-calendar">
+                       <div class="ui input left icon">
+                         <i class="calendar icon"></i>
+                         <input type="text" id="rrule-exceptions">
+                        </div>
+                      </div>
+                      <div class="ui button" onclick ="addException()" >Add Exception</div>
+                    </div>
+                    <div class="three wide column">
+                      <b>Exceptions List</b>
+                      <div id="exceptions-list"></div>
+                      <div class="ui button" onclick ="clearExceptions()" >Clear List</div>
+                      <div class ="ui button" onclick="getExceptionDate()">Test</div>
+                    </div>
+                    <div class="five wide column">
+                      <label><b>Every ___th Iteration</b></label>
+                      <input type="number" id="rrule-freq" min="1">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
       <hr style="margin: 50px 0 50px 0;" color="#00B5AD"/>
       <div class="ui two column very relaxed grid">
         <div class="ten wide column">
@@ -208,6 +267,94 @@
     },
   });
 
+  var rruleExceptions = Array();
+  var exceptionsIndex = -1;
+  var rruleEnd = null  ;
+  var today = new Date();
+
+  $('#rrule-exceptions-calendar').calendar({minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate())});
+
+  $('#rrule-end-calendar').calendar({
+    onChange: function(date, text) {
+      rruleEnd = text;
+      console.log(rruleEnd);
+    }
+  });
+
+  function addException()
+  {
+    if (document.getElementById("rrule-exceptions").value != "")
+    {
+      exceptionsIndex++;
+      rruleExceptions[exceptionsIndex] = document.getElementById("rrule-exceptions").value;
+      document.getElementById("exceptions-list").innerHTML = rruleExceptions.join("<br>");
+    }
+    else
+    {
+      alert('Invalid input: empty');
+    }
+  }
+
+  function clearExceptions()
+  {
+    for (var i = exceptionsIndex; i >= 0; i--)
+    {
+      rruleExceptions[i] == null;
+      console.log(rruleExceptions[i]);
+    }
+    document.getElementById("exceptions-list").innerHTML = '';
+    exceptionsIndex = -1;
+  }
+
+  function getRecurrenceRule() {
+    var rrule = document.getElementById("rrule").value;
+    var rruleFreq = document.getElementById("rrule-freq").value;
+
+    var returnString = "";
+
+    if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
+      returnString += "RRULE:FREQ=" + rrule;
+      if (rruleFreq > 0) {
+        returnString += ";INTERVAL=" + rruleFreq;
+      } else if (rruleFreq < 1) {
+        returnString = "";
+        alert('Invalid frequency: must be at least one.')
+      }
+      if (rruleEnd != null)
+      {
+        var rruleEndISO = new Date(rruleEnd).toISOString();
+        var rruleEndFormat = rruleEndISO.substr(0, 4)+rruleEndISO.substr(5, 2)+rruleEndISO.substr(8, 2) +'T'+rruleEndISO.substr(11, 2)+rruleEndISO.substr(14, 2)+rruleEndISO.substr(17, 2);
+        returnString+=";UNTIL="+rruleEndFormat+"Z";
+      }
+    }
+    return returnString;
+  }
+
+  function getExceptionDate() {
+    //rruleExceptions and exceptionsIndex are already defined
+    var returnString="EXDATE:";
+    var temp;
+
+    for (var i = exceptionsIndex; i >= 0; i--)
+    {
+      temp = new Date(rruleExceptions[i]).toISOString();
+      temp = temp.substr(0, 4)+temp.substr(5, 2)+temp.substr(8, 2) +'T'+temp.substr(11, 2)+temp.substr(14, 2)+temp.substr(17, 2)+"Z";
+      if (temp < finalSDate)
+      {
+        alert('One or more invalid exception dates: Must not be before start date');
+      }
+      else
+      {
+        returnString+=temp;
+        if (i > 0)
+        {
+          returnString+=",";
+        }
+      }
+    }
+    console.log(returnString);
+    return returnString;
+  }
 
   var timezoneItems = "";
   var timezones = [];
@@ -296,7 +443,6 @@
 
 
 
-
     // code to make start date into a string for .ics file
     var startDate = new Date(sdate).toISOString();
     var finalSDate = startDate.substr(0,4) + startDate.substr(5,2) + startDate.substr(8,2) + 'T'  + startDate.substr(11,2)
@@ -309,6 +455,13 @@
         + endDate.substr(14,2) + endDate.substr(17,2);
     var compareEnd = new Date(edate).getTime();
     var compareNow = new Date().getTime();
+
+
+
+
+    
+
+
 
     // console.log('info for start date:')
     // console.log(sdate);
