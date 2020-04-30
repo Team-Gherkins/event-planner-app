@@ -111,6 +111,7 @@
                     <b>Recurring?</b>
                   </div>
                   <div class="one wide column">
+                    <hr style="margin: 4px 0 4px 0;" color="#FFFFFF"/>
                     <div class="ui icon large circular button"><i class="angle double down icon"></i></div>
                   </div>
                 </div>
@@ -127,7 +128,7 @@
                     </select>
                     </div>
                     <div class="four wide column">
-                      <label><b>Until</b></label>
+                      <label><b>Until...</b></label>
                       <div class="ui calendar" id="rrule-end-calendar">
                         <div class="ui input left icon">
                           <i class="calendar icon"></i>
@@ -136,20 +137,20 @@
                       </div>
                     </div>
                     <div class="four wide column">
-                      <label><b>Exceptions</b></label>
+                      <label><b>Add an Exception</b></label>
                       <div class="ui calendar" id="rrule-exceptions-calendar">
                        <div class="ui input left icon">
                          <i class="calendar icon"></i>
                          <input type="text" id="rrule-exceptions">
                         </div>
                       </div>
-                      <div class="ui button" onclick ="addException()" >Add Exception</div>
+                      <hr style="margin: 5px 0 5px 0;" color="#FFFFFF"/>
+                      <div class="ui teal button" onclick ="addException()" >Add Exception</div>
                     </div>
-                    <div class="three wide column">
+                    <div class="four wide column">
                       <b>Exceptions List</b>
                       <div id="exceptions-list"></div>
                       <div class="ui button" onclick ="clearExceptions()" >Clear List</div>
-                      <div class ="ui button" onclick="getExceptionDate()">Test</div>
                     </div>
                     <div class="five wide column">
                       <label><b>Every ___th Iteration</b></label>
@@ -281,7 +282,7 @@
     }
   });
 
-  function addException()
+  function addException() // to rruleExceptions
   {
     if (document.getElementById("rrule-exceptions").value != "")
     {
@@ -295,7 +296,7 @@
     }
   }
 
-  function clearExceptions()
+  function clearExceptions() // to rruleExceptions
   {
     for (var i = exceptionsIndex; i >= 0; i--)
     {
@@ -306,55 +307,6 @@
     exceptionsIndex = -1;
   }
 
-  function getRecurrenceRule() {
-    var rrule = document.getElementById("rrule").value;
-    var rruleFreq = document.getElementById("rrule-freq").value;
-
-    var returnString = "";
-
-    if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
-      returnString += "RRULE:FREQ=" + rrule;
-      if (rruleFreq > 0) {
-        returnString += ";INTERVAL=" + rruleFreq;
-      } else if (rruleFreq < 1) {
-        returnString = "";
-        alert('Invalid frequency: must be at least one.')
-      }
-      if (rruleEnd != null)
-      {
-        var rruleEndISO = new Date(rruleEnd).toISOString();
-        var rruleEndFormat = rruleEndISO.substr(0, 4)+rruleEndISO.substr(5, 2)+rruleEndISO.substr(8, 2) +'T'+rruleEndISO.substr(11, 2)+rruleEndISO.substr(14, 2)+rruleEndISO.substr(17, 2);
-        returnString+=";UNTIL="+rruleEndFormat+"Z";
-      }
-    }
-    return returnString;
-  }
-
-  function getExceptionDate() {
-    //rruleExceptions and exceptionsIndex are already defined
-    var returnString="EXDATE:";
-    var temp;
-
-    for (var i = exceptionsIndex; i >= 0; i--)
-    {
-      temp = new Date(rruleExceptions[i]).toISOString();
-      temp = temp.substr(0, 4)+temp.substr(5, 2)+temp.substr(8, 2) +'T'+temp.substr(11, 2)+temp.substr(14, 2)+temp.substr(17, 2)+"Z";
-      if (temp < finalSDate)
-      {
-        alert('One or more invalid exception dates: Must not be before start date');
-      }
-      else
-      {
-        returnString+=temp;
-        if (i > 0)
-        {
-          returnString+=",";
-        }
-      }
-    }
-    console.log(returnString);
-    return returnString;
-  }
 
   var timezoneItems = "";
   var timezones = [];
@@ -458,8 +410,65 @@
 
 
 
+    var rrule = document.getElementById("rrule").value;
+    var rruleFreq = document.getElementById("rrule-freq").value;
 
-    
+    var rrFinal = "";
+// generating recurrence rule string w/ embedded checks
+    if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
+      rrFinal += "RRULE:FREQ=" + rrule;
+      if (rruleFreq > 0) {
+        rrFinal += ";INTERVAL=" + rruleFreq;
+      } else if (rruleFreq < 1) {
+        rrFinal = "";
+        alert('Recurrence error: Invalid frequency, must be at least one.');
+        valid = false;
+      }
+      if (rruleEnd != null)
+      {
+        var rruleEndISO = new Date(rruleEnd).toISOString();
+        var rruleEndFormat = rruleEndISO.substr(0, 4)+rruleEndISO.substr(5, 2)+rruleEndISO.substr(8, 2) +'T'+rruleEndISO.substr(11, 2)+rruleEndISO.substr(14, 2)+rruleEndISO.substr(17, 2);
+        rrFinal+=";UNTIL="+rruleEndFormat;
+        if (rruleEndFormat < finalSDate)
+        {
+          alert('Recurrence error: Invalid until date, must be after start date');
+          valid = false;
+        }
+      }
+    }
+
+
+
+    var exdate=""; // generating exdate string w/ embedded checks
+    var temp;
+    for (var i = exceptionsIndex; i >= 0; i--)
+    {
+      temp = new Date(rruleExceptions[i]).toISOString();
+      temp = temp.substr(0, 4)+temp.substr(5, 2)+temp.substr(8, 2) +'T'+temp.substr(11, 2)+temp.substr(14, 2)+temp.substr(17, 2)+"Z";
+      if (temp < finalSDate)
+      {
+        alert('Recurrence error: One or more invalid exception dates, Must not be before start date');
+        valid = false;
+      }
+      else if (temp > finalEDate)
+      {
+        alert('Recurrence error, One or more invalid exception dates, Must not be after end date');
+        valid = false;
+      }
+      else
+      {
+        if (exceptionsIndex == i)
+        {
+          exdate+="EXDATE:";
+        }
+        exdate+=temp;
+        if (i > 0)
+        {
+          exdate+=",";
+        }
+      }
+    }
+
 
 
 
@@ -528,7 +537,7 @@
         valid = false;
         alert('Invalid address was input. Please make sure that input is correct.');
       } else if (valid === true) {
-        generateFile('calendar.ics', title, visibility, priority, timezoneFields, finalSDate, finalEDate, rsvp, sentBy, address, resources, summary, this.lat, this.lng);
+        generateFile('calendar.ics', title, visibility, priority, timezoneFields, finalSDate, finalEDate, rsvp, sentBy, address, resources, summary, this.lat, this.lng, rrFinal, exdate);
       }
     }
 

@@ -1,5 +1,5 @@
 
-function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
+function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng, rrFinal, exdate) {
 
   console.log(timezoneFields);
 
@@ -55,6 +55,8 @@ DTSTAMP:20200228T141403`
         + summaryText;
   text +=
 `CATEGORIES:SCHOOL, STUDY
+${rrFinal}
+${exdate}
 LOCATION:${location}
 GEO:${lat};${lng}
 END:VEVENT
