@@ -1,32 +1,28 @@
-function generateFile(filename, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
-
-  console.log(timezoneFields);
+function generateFile(filename, uid, dtstamp, description, classification, priority, timezoneId, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
 
   var rsvpText = "";
   var sentByText = "";
   var resourcesText = "";
   var summaryText = "";
-  var timezoneBeginText = "";
-  var timezoneEndText = "";
   if (rsvp !== "") {
-    rsvpText = `ATTENDEE;RSVP=TRUE:mailto:${rsvp}`;
+    rsvpText = `ATTENDEE;RSVP=TRUE:mailto:${rsvp}
+    `;
   }
   if (sentBy !== "") {
-    sentBy = `ORGANIZER;SENT-BY=\"mailto:${sentBy}\":mailto:${sentBy}`;
+    sentBy = `ORGANIZER;SENT-BY=\"mailto:${sentBy}\":mailto:${sentBy}
+    `;
   }
   if (resources !== "") {
-    resourcesText = `RESOURCES:${resources}`;
+    resourcesText = `RESOURCES:${resources}
+    `;
   }
   if (summary !== "") {
-    summaryText = `SUMMARY:${summary}`
+    summaryText = `SUMMARY:${summary}
+    `
   }
-  if (timezoneFields.isDST) {
-    timezoneBeginText = `BEGIN:DAYLIGHT`;
-    timezoneEndText = `END:DAYLIGHT`;
-  } else {
-    timezoneBeginText = `BEGIN:STANDARD`;
-    timezoneEndText = `END:STANDARD`;
-  }
+
+  // original uid: c7614cff-3549-4a00-9152-d25cc1fe077d
+  // original dtstamp: 20200228T141403
 
   var text =
 `BEGIN:VCALENDAR
@@ -35,25 +31,25 @@ PRODID:-//ZContent.net//Zap Calendar 1.0//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VTIMEZONE
-TZID:${timezoneFields.timezoneId}
+TZID:${timezoneId}
 END:VTIMEZONE
 BEGIN:VEVENT
 CLASS:${classification}
 PRIORITY:${priority}
 DESCRIPTION:${description}
-UID:c7614cff-3549-4a00-9152-d25cc1fe077d
+UID:${uid}
 SEQUENCE:0
 STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 DTSTART:${dtstart}
 DTEND:${dtend}
-DTSTAMP:20200228T141403`
-  text += sentByText;
+DTSTAMP:${dtstamp}
+`
+  text += sentByText
         + rsvpText
         + resourcesText
         + summaryText;
-  text +=
-`CATEGORIES:SCHOOL, STUDY
+  text += `CATEGORIES:SCHOOL, STUDY
 LOCATION:${location}
 GEO:${lat};${lng}
 END:VEVENT

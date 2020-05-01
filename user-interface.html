@@ -20,6 +20,9 @@
   <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
   <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
 
+  <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+
   <!--Javascript-->
   <script src="fileGenerator.js"></script>
 </head>
@@ -185,6 +188,19 @@
   $('.ui.calendar').calendar();
 
 
+  var firebaseConfig = {
+    apiKey: "AIzaSyBUNfi7RhfOV0TBkt6TtHQeElyZl15kcR0",
+    authDomain: "event-planner-9b34e.firebaseapp.com",
+    databaseURL: "https://event-planner-9b34e.firebaseio.com",
+    projectId: "event-planner-9b34e",
+    storageBucket: "event-planner-9b34e.appspot.com",
+    messagingSenderId: "1057600343929",
+    appId: "1:1057600343929:web:e3511e2d1b0187d75269a8"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+
+
   var checkRSVP = function () {
     if (document.getElementById("rsvp-request").checked) {
       document.getElementById("event-rsvp").disabled = false;
@@ -268,17 +284,6 @@
 
   function checkInput() {
 
-    var timezoneFields = { timezoneId: null, timezoneName: null, isDST: null, offset: null };
-    timezoneFields.timezoneId = document.getElementById('timezone-dropdown').options[document.getElementById('timezone-dropdown').selectedIndex].text;
-    timezoneFields.timezoneName = document.getElementById('timezone-dropdown')[document.getElementById('timezone-dropdown').selectedIndex].value;
-    timezoneFields.isDST = moment().tz(timezoneFields.timezoneId).isDST();
-    timezoneFields.offset = moment().tz(timezoneFields.timezoneId)._offset / 60;
-    if (timezoneFields.offset > 0) {
-      timezoneFields.offset = "+" + timezoneFields.offset + "00";
-    } else {
-      timezoneFields.offset += "00";
-    }
-
     var valid = true;
     var title = document.getElementById("event-title").value;
     var visibility = document.getElementById('event-visibility')[document.getElementById('event-visibility').selectedIndex].value;
@@ -293,6 +298,8 @@
     var state = document.getElementById('address-state')[document.getElementById('address-state').selectedIndex].value;
     var city = document.getElementById("address-city").value;
     var zip = document.getElementById("address-zip").value;
+    var timezoneId = document.getElementById('timezone-dropdown').options[document.getElementById('timezone-dropdown').selectedIndex].text;
+
 
 
 
@@ -309,6 +316,14 @@
         + endDate.substr(14,2) + endDate.substr(17,2);
     var compareEnd = new Date(edate).getTime();
     var compareNow = new Date().getTime();
+
+    // same code as the ones above to make the date/time portion of the UID (current date/time)
+    // also using this for dtstamp, which is the date and time that a .ics file was generated
+    var uidDate = new Date().toISOString();
+    var finalUidDate = uidDate.substr(0,4) + uidDate.substr(5,2) + uidDate.substr(8,2) + 'T'  + uidDate.substr(11,2)
+      + uidDate.substr(14,2) + uidDate.substr(17,2);
+
+
 
     // console.log('info for start date:')
     // console.log(sdate);
@@ -375,7 +390,31 @@
         valid = false;
         alert('Invalid address was input. Please make sure that input is correct.');
       } else if (valid === true) {
-        generateFile('calendar.ics', title, visibility, priority, timezoneFields, finalSDate, finalEDate, rsvp, sentBy, address, resources, summary, this.lat, this.lng);
+        var lat = this.lat;
+        var lng = this.lng;
+        var generateUidSequenceNumber = firebase.database().ref('uidSequenceNumber').once('value')
+          .then(function(snapshot) {
+            firebase.database().ref().set({
+              uidSequenceNumber: snapshot.val() + 1,
+            });
+            $.ajax('http://edns.ip-api.com/json')
+              .then(
+                function success(response) {
+                  var uid = finalUidDate + "-" + (snapshot.val() + 1) + "@" + response.dns.ip;
+                  generateFile('calendar.ics', uid, finalUidDate, title, visibility, priority, timezoneId, finalSDate, finalEDate, rsvp, sentBy, venue, resources, summary, lat, lng);
+                },
+                function fail(err) {
+                  console.log(err);
+                  alert("Internal error: please try again.");
+                  valid = false;
+                }
+              );
+          })
+          .catch(err => {
+            console.log(err);
+            alert("Internal error: please try again.");
+            valid = false;
+          })
       }
     }
 
@@ -435,6 +474,8 @@
       "<option value=\"WY\">Wyoming</option>";
   document.getElementById("address-state").innerHTML = stateItems;
 </script>
+
+
 
 </body>
 
