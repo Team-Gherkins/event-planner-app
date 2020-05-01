@@ -1,24 +1,40 @@
-function generateFile(filename, uid, dtstamp, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng, rrFinal, exdate) {
+function generateFile(filename, uid, dtstamp, description, classification, priority, timezoneId, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng, rrFinal, exdate) {
 
   var rsvpText = "";
   var sentByText = "";
   var resourcesText = "";
   var summaryText = "";
+  var rrFinalText = "";
+  var exdateText = "";
   if (rsvp !== "") {
-    rsvpText = `ATTENDEE;RSVP=TRUE:mailto:${rsvp}
-    `;
+    rsvpText =
+`ATTENDEE;RSVP=TRUE:mailto:${rsvp}
+`;
   }
   if (sentBy !== "") {
-    sentBy = `ORGANIZER;SENT-BY=\"mailto:${sentBy}\":mailto:${sentBy}
-    `;
+    sentBy =
+`ORGANIZER;SENT-BY=\"mailto:${sentBy}\":mailto:${sentBy}
+`;
   }
   if (resources !== "") {
-    resourcesText = `RESOURCES:${resources}
-    `;
+    resourcesText =
+`RESOURCES:${resources}
+`;
   }
   if (summary !== "") {
-    summaryText = `SUMMARY:${summary}
-    `
+    summaryText =
+`SUMMARY:${summary}
+`
+  }
+  if (rrFinal !== "") {
+    rrFinalText =
+`${rrFinal}
+`
+  }
+  if (exdate !== "") {
+    exdateText =
+`${exdate}
+`
   }
 
   // original uid: c7614cff-3549-4a00-9152-d25cc1fe077d
@@ -44,16 +60,11 @@ TRANSP:TRANSPARENT
 DTSTART:${dtstart}
 DTEND:${dtend}
 DTSTAMP:${dtstamp}
+CATEGORIES:SCHOOL, STUDY
 `
-  text += sentByText
-        + rsvpText
-        + resourcesText
-        + summaryText;
+  text += sentByText + rsvpText + resourcesText + summaryText + rrFinalText + exdateText;
   text +=
-`CATEGORIES:SCHOOL, STUDY
-${rrFinal}
-${exdate}
-LOCATION:${location}
+`LOCATION:${location}
 GEO:${lat};${lng}
 END:VEVENT
 END:VCALENDAR`;

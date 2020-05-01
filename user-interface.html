@@ -400,16 +400,18 @@
     var timezoneId = document.getElementById('timezone-dropdown').options[document.getElementById('timezone-dropdown').selectedIndex].text;
 
 
-
+    var localTimezoneOffset = (new Date(sdate)).getTimezoneOffset() * 60000;
 
     // code to make start date into a string for .ics file
-    var startDate = new Date(sdate).toISOString();
+    var startDate = (new Date(new Date(sdate) - localTimezoneOffset)).toISOString();
+    console.log(startDate);
     var finalSDate = startDate.substr(0,4) + startDate.substr(5,2) + startDate.substr(8,2) + 'T'  + startDate.substr(11,2)
         + startDate.substr(14,2) + startDate.substr(17,2);
+    console.log(finalSDate);
     var compareStart = new Date(sdate).getTime();
 
     // code to make start date into a string for .ics file
-    var endDate = new Date(edate).toISOString();
+    var endDate = (new Date(new Date(edate) - localTimezoneOffset)).toISOString();
     var finalEDate = endDate.substr(0,4) + endDate.substr(5,2) + endDate.substr(8,2) + 'T'  + endDate.substr(11,2)
         + endDate.substr(14,2) + endDate.substr(17,2);
     var compareEnd = new Date(edate).getTime();
@@ -418,7 +420,7 @@
 
     // same code as the ones above to make the date/time portion of the UID (current date/time)
     // also using this for dtstamp, which is the date and time that a .ics file was generated
-    var uidDate = new Date().toISOString();
+    var uidDate = (new Date(Date.now() - localTimezoneOffset)).toISOString()
     var finalUidDate = uidDate.substr(0,4) + uidDate.substr(5,2) + uidDate.substr(8,2) + 'T'  + uidDate.substr(11,2)
       + uidDate.substr(14,2) + uidDate.substr(17,2);
 
@@ -440,7 +442,7 @@
       }
       if (rruleEnd != null)
       {
-        var rruleEndISO = new Date(rruleEnd).toISOString();
+        var rruleEndISO = (new Date(new Date(rruleEnd) - localTimezoneOffset)).toISOString()
         var rruleEndFormat = rruleEndISO.substr(0, 4)+rruleEndISO.substr(5, 2)+rruleEndISO.substr(8, 2) +'T'+rruleEndISO.substr(11, 2)+rruleEndISO.substr(14, 2)+rruleEndISO.substr(17, 2);
         rrFinal+=";UNTIL="+rruleEndFormat;
         if (rruleEndFormat < finalSDate)
@@ -455,16 +457,18 @@
 
     var exdate=""; // generating exdate string w/ embedded checks
     var temp;
+    var compareTemp = "";
     for (var i = exceptionsIndex; i >= 0; i--)
     {
-      temp = new Date(rruleExceptions[i]).toISOString();
+      temp = (new Date(new Date(rruleExceptions[i]) - localTimezoneOffset)).toISOString()
+      compareTemp = new Date(temp).getTime();
       temp = temp.substr(0, 4)+temp.substr(5, 2)+temp.substr(8, 2) +'T'+temp.substr(11, 2)+temp.substr(14, 2)+temp.substr(17, 2)+"Z";
-      if (temp < finalSDate)
+      if (compareTemp < compareStart)
       {
         alert('Recurrence error: One or more invalid exception dates, Must not be before start date');
         valid = false;
       }
-      else if (temp > finalEDate)
+      else if (compareTemp > compareEnd)
       {
         alert('Recurrence error, One or more invalid exception dates, Must not be after end date');
         valid = false;
@@ -553,6 +557,10 @@
       } else if (valid === true) {
         var lat = this.lat;
         var lng = this.lng;
+        // generateFile is called within here
+        // block of code is for generating the new sequence number for the UID (using a client-side database to store the number)
+        // also generates the client's ip address for the UID here
+        // can only get the sequence num and ip address for use in generateFile in .then(), so need to call generateFile within .then()
         var generateUidSequenceNumber = firebase.database().ref('uidSequenceNumber').once('value')
           .then(function(snapshot) {
             firebase.database().ref().set({
