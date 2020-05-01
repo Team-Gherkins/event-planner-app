@@ -1,4 +1,4 @@
-function generateFile(filename, uid, dtstamp, description, classification, priority, timezoneId, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng) {
+function generateFile(filename, uid, dtstamp, description, classification, priority, timezoneFields, dtstart, dtend, rsvp, sentBy, location, resources, summary, lat, lng, rrFinal, exdate) {
 
   var rsvpText = "";
   var sentByText = "";
@@ -49,7 +49,10 @@ DTSTAMP:${dtstamp}
         + rsvpText
         + resourcesText
         + summaryText;
-  text += `CATEGORIES:SCHOOL, STUDY
+  text +=
+`CATEGORIES:SCHOOL, STUDY
+${rrFinal}
+${exdate}
 LOCATION:${location}
 GEO:${lat};${lng}
 END:VEVENT
@@ -66,5 +69,3 @@ END:VCALENDAR`;
 
   document.body.removeChild(element);
 }
-
-
