@@ -616,7 +616,10 @@
         alert('Zip cannot include letters');
       } else if( checkRSVP() && !ValidateEmail(rsvp)){
         valid = false;
-        alert('invalid email');
+        alert('invalid rsvp email');
+      } else if( sentBy != '' && !ValidateEmail(sentBy)){
+        valid = false;
+        alert('invalid sent from email');
       } else if(state === '' | city === '' | zip === '' | street === ''){
         valid = false;
         alert('Please make sure that all fields of the address are completed.');
