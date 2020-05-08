@@ -497,7 +497,7 @@
     var rruleFreq = document.getElementById("rrule-freq").value;
 
     var rrFinal = "";
-// generating recurrence rule string w/ embedded checks
+    // generating recurrence rule string w/ embedded checks
     if (rrule == "WEEKLY" || rrule == "DAILY" || rrule == "MONTHLY" || rrule == "YEARLY") {
       rrFinal += "RRULE:FREQ=" + rrule;
       if (rruleFreq > 0) {
@@ -554,17 +554,6 @@
     }
 
 
-
-
-    // console.log('info for start date:')
-    // console.log(sdate);
-    // console.log(startDate);
-    // console.log(finalSDate);
-    //
-    // console.log('info for end date:')
-    // console.log(edate);
-    // console.log(endDate);
-    // console.log(finalEDate);
 
     let lat = null;
     let lng = null;
