@@ -22,6 +22,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+  <script type="text/javascript" src="node_modules/jquery"></script>
 
   <!--Javascript-->
   <script src="fileGenerator.js"></script>
@@ -243,7 +244,12 @@
 </div>
 <br/><br/>
 
-<script>
+
+
+
+
+
+<script type="text/javascript">
   $('.ui.accordion').accordion({ selector: { trigger: '.title .ui.button' } });
   $('.ui.calendar').calendar();
 
@@ -360,6 +366,12 @@
     $('.ui.accordion').accordion('close', 0);
   }
 
+  function ValidateEmail(mail) {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+      return (true)
+    }
+    return (false)
+  }
 
   function checkForNum(input){
     var i;
@@ -381,6 +393,49 @@
     return true;
   }
 
+  function inputFormater(input){
+    input = input.replace(/\n/g, "\\n");
+
+
+    input = input.replace(/;/g, "\\;");
+    input = input.replace(/,/g, "\\,");
+
+    return input;
+  }
+
+  function validateAddressHelper(street, city, state, zip) {
+    // send API request
+    let Locale = 'en';
+    let formattedaddress;
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+      url: 'https://api.address-validator.net/api/verify',
+      type: 'POST',
+      data: { StreetAddress: street,
+        City: city,
+        PostalCode: zip,
+        State: state,
+        CountryCode: '001',
+        Locale: Locale,
+        APIKey: 'av-19e3b2bb63abda37172bb332fe342db8'},
+      dataType: 'json',
+        success: function(json) {
+          if (typeof(json.status) != "undefined") {
+            console.log(json.status);
+            resolve(json)
+          } else {
+            reject(json)
+          }
+        },
+        error: function(err) {
+          reject(err) // Reject the promise and go to catch()
+        }
+      });
+    });
+  }
+
+
+
   function checkInput() {
 
     var valid = true;
@@ -398,6 +453,18 @@
     var city = document.getElementById("address-city").value;
     var zip = document.getElementById("address-zip").value;
     var timezoneId = document.getElementById('timezone-dropdown').options[document.getElementById('timezone-dropdown').selectedIndex].text;
+
+    summary = inputFormater(summary);
+    resources = inputFormater(resources);
+    title = inputFormater(title);
+    street = inputFormater(street);
+    state = inputFormater(state);
+    city = inputFormater(city);
+    zip = inputFormater(zip);
+
+    console.log(validateAddressHelper(address));
+
+
 
 
     var localTimezoneOffset = (new Date(sdate)).getTimezoneOffset() * 60000;
@@ -499,8 +566,19 @@
     // console.log(endDate);
     // console.log(finalEDate);
 
-    var lat = null;
-    var lng = null;
+    let lat = null;
+    let lng = null;
+    let isAddValid = false;
+
+    validateAddressHelper(street, city, state, zip).then(function(data) {
+      // Run this when your request was successful
+      if(data.status === 'VALID'){
+        isAddValid = true;
+        console.log('valid address');
+      } else {
+        console.log(data.status);
+      }
+
 
     L.mapquest.key = 'OjiA3XDVG7onzudvU6ZVAcIKzAx1cPng';
     L.mapquest.geocoding().geocode({
@@ -547,10 +625,16 @@
       } else if(!(checkForLetters(zip))){
         valid = false;
         alert('Zip cannot include letters');
+      } else if( checkRSVP() && !ValidateEmail(rsvp)){
+        valid = false;
+        alert('invalid email');
       } else if(state === '' | city === '' | zip === '' | street === ''){
         valid = false;
         alert('Please make sure that all fields of the address are completed.');
       } else if(this.lat === null | this.lng === null){
+        valid = false;
+        alert('Invalid address was input. Please make sure that input is correct.');
+      } else if(isAddValid == false){
         valid = false;
         alert('Invalid address was input. Please make sure that input is correct.');
       } else if (valid === true) {
@@ -586,6 +670,10 @@
       }
     }
 
+    }).catch(function(err) {
+      // Run this when promise was rejected via reject()
+      console.log(err)
+    })
   }
 
   var stateItems =
